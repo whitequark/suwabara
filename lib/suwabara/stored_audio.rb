@@ -6,7 +6,7 @@ module Suwabara
     def initialize_from_io(io, original_name)
       super
 
-      movie = FFMPEG::Movie.new(full_path)
+      movie = FFMPEG::Movie.new(full_path.to_s)
       @duration = movie.duration
     end
 
