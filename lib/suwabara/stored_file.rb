@@ -62,7 +62,16 @@ module Suwabara
     end
 
     def rename(new_name)
-      with_io { |io| self.class.new(@model, io, new_name) }
+      with_io { |io| self.class.new(@model, @mounted_as, io, new_name) }
+    end
+
+    def rewrite(new_body)
+      io = Tempfile.new('suwabara')
+      io.write(new_body)
+
+      self.class.new(@model, @mounted_as, io, @name)
+    ensure
+      io.close!
     end
 
     def with_io
