@@ -6,8 +6,12 @@ module Suwabara::ORM
     module ClassMethods
       attr_reader :_mounted_storages
 
-      def mount_storage(name, klass)
+      def mount_storage(name, klass, options={})
         name = name.to_sym
+
+        if (unknown_opts = options.keys - [:text]).any?
+          raise ArgumentError, "unknown options for mount_storage: #{unknown_opts.join(', ')}"
+        end
 
         @_mounted_storages ||= {}
         @_mounted_storages[name] = klass
@@ -35,6 +39,16 @@ module Suwabara::ORM
           end
 
           write_attribute(name, JSON.dump(stored_file.to_hash))
+        end
+
+        if options[:text]
+          define_method(:"#{name}_text") do
+            send(name).read
+          end
+
+          define_method(:"#{name}_text=") do |text|
+            send(:"#{name}=", send(name).rewrite(text))
+          end
         end
       end
     end
