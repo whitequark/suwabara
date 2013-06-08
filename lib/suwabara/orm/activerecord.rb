@@ -32,6 +32,9 @@ module Suwabara::ORM
           elsif value.respond_to?(:to_hash) || value.respond_to?(:to_io)
             stored_file = self.class._mounted_storages[name].new(self, name,
                                   value)
+          elsif value.nil?
+            write_attribute(name, nil)
+            return
           else
             raise ArgumentError, "Writer #{name}= accepts " +
                     "ActionDispatch::Http::UploadedFile, Suwabara::StoredFile, IO or " +
