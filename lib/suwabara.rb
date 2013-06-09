@@ -16,6 +16,11 @@ module Suwabara
     require 'suwabara/orm/activerecord'
   end
 
+  if defined?(Rails)
+    require 'suwabara/asset_handler'
+    require 'suwabara/railtie'
+  end
+
   def self.default_root
     if defined?(Rails)
       Rails.root.join('public')
