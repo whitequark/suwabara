@@ -5,7 +5,7 @@ module Suwabara
       if input.is_a?(ImageTransform)
         input
       else
-        input =~ /^(?:(\d+)x(\d+)\+(\d+)\+(\d+):)?(\d+)?(?:x(\d+))?$/
+        input =~ /^(?:(\d+)x(\d+)\+(\d+)\+(\d+):)?(\d+)?x(\d+)?$/
 
         new($5, $6, $3, $4, $1, $2)
       end
