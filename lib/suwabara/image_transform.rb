@@ -5,7 +5,9 @@ module Suwabara
       if input.is_a?(ImageTransform)
         input
       else
-        input =~ /^(?:(\d+)x(\d+)\+(\d+)\+(\d+):)?(\d+)?x(\d+)?$/
+        input =~ /^(?: (\d+)x(\d+)\+(\d+)\+(\d+) :? )?
+                   (?: (\d+)?x(\d+)? )?
+                  $/x
 
         new($5, $6, $3, $4, $1, $2)
       end
@@ -23,16 +25,17 @@ module Suwabara
       freeze
     end
 
-    def crop_geometry
-      if [@crop_left, @crop_top, @crop_width, @crop_height].any?
-        "#{@crop_width}x#{@crop_height}+#{@crop_left || 0}+#{@crop_top || 0}"
-      end
+    # Crop at two points.
+    def crop_points(x1, y1, x2, y2)
+      x1, x2 = [x1, x2].sort
+      y1, y2 = [y1, y2].sort
+
+      crop_dimensions(x1, y1, x2 - x1, y2 - y1)
     end
 
-    def resize_geometry
-      if [@width, @height].any?
-        "#{@width}x#{@height}"
-      end
+    # Crop at a certain width and height.
+    def crop_dimensions(left, top, width, height)
+      self.class.new(@width, @height, left, top, width, height)
     end
 
     def present?
@@ -62,6 +65,20 @@ module Suwabara
 
     def to_s
       [crop_geometry, resize_geometry].compact.join(':')
+    end
+
+    private
+
+    def crop_geometry
+      if [@crop_left, @crop_top, @crop_width, @crop_height].any?
+        "#{@crop_width}x#{@crop_height}+#{@crop_left || 0}+#{@crop_top || 0}"
+      end
+    end
+
+    def resize_geometry
+      if [@width, @height].any?
+        "#{@width}x#{@height}"
+      end
     end
   end
 
