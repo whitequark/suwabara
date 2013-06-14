@@ -17,10 +17,9 @@ module Suwabara
                    crop_left=nil,  crop_top=nil,
                    crop_width=nil, crop_height=nil)
 
-      @width,      @height      = width,  height
-
-      @crop_left,  @crop_top    = crop_left,  crop_top
-      @crop_width, @crop_height = crop_width, crop_height
+      @width, @height, @crop_left,  @crop_top, @crop_width, @crop_height =
+        [ width, height, crop_left, crop_top, crop_width, crop_height].
+          map { |value| value && value.to_i }
 
       freeze
     end
