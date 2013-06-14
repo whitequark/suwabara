@@ -9,7 +9,7 @@ class StoredFileTest < Minitest::Test
     @tempfile.flush
     @tempfile.rewind
 
-    @file = Suwabara::StoredFile.new(@model, @tempfile, 'test.png')
+    @file = Suwabara::StoredFile.new(@model, 'file', @tempfile, 'test.png')
   end
 
   def test_initialize_from_io
@@ -17,12 +17,12 @@ class StoredFileTest < Minitest::Test
   end
 
   def test_initialize_from_io_with_name
-    file_gif = Suwabara::StoredFile.new(@model, @tempfile, 'test.gif')
+    file_gif = Suwabara::StoredFile.new(@model, 'file', @tempfile, 'test.gif')
     assert_equal 'test.gif', file_gif.name
   end
 
   def test_initialize_from_hash
-    file_gif = Suwabara::StoredFile.new(@model,
+    file_gif = Suwabara::StoredFile.new(@model, 'file',
                 { 'name'    => 'test.gif',
                   'size'    => 6,
                   'storage' => @tempfile.path })
@@ -33,7 +33,7 @@ class StoredFileTest < Minitest::Test
   end
 
   def test_content_type
-    assert_equal MIME::Types['image/png'], @file.content_type
+    assert_equal 'image/png', @file.content_type
   end
 
   def test_read
@@ -47,14 +47,14 @@ class StoredFileTest < Minitest::Test
   end
 
   def test_url
-    assert_equal URI.parse('/000/000/042/test.png'),
+    assert_equal '/000/000/042/test.png',
                  @file.url
 
     root_file = Class.new(Suwabara::StoredFile) do
       def url_for(path)
         URI.parse('http://assets.localhost').merge(path)
       end
-    end.new(@model, @file.to_hash)
+    end.new(@model, 'file', @file.to_hash)
 
     assert_equal URI.parse('http://assets.localhost/000/000/042/test.png'),
                  root_file.url
@@ -73,7 +73,7 @@ class StoredFileTest < Minitest::Test
   end
 
   def test_equals
-    file2 = Suwabara::StoredFile.new(@warehouse, @file.to_hash)
+    file2 = Suwabara::StoredFile.new(@warehouse, 'file', @file.to_hash)
 
     assert_equal @file, file2
   end
