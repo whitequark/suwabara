@@ -43,12 +43,12 @@ module Suwabara
 
       image = MiniMagick::Image.open(source)
 
-      image.combine_options do |c|
-        if crop_geometry
-          c.crop(crop_geometry)
-        end
+      if crop_geometry
+        image.crop(crop_geometry)
+      end
 
-        if resize_geometry
+      if resize_geometry
+        image.combine_options do |c|
           c.scale(resize_geometry + '^')
           c.gravity('center')
           c.background('white')
