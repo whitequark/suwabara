@@ -26,9 +26,6 @@ module Suwabara
 
     # Crop at two points.
     def crop_points(x1, y1, x2, y2)
-      x1, x2 = [x1, x2].sort
-      y1, y2 = [y1, y2].sort
-
       crop_dimensions(x1, y1, x2 - x1, y2 - y1)
     end
 
