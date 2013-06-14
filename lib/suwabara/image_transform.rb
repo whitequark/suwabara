@@ -56,7 +56,10 @@ module Suwabara
           c.scale(resize_geometry + '^')
           c.gravity('center')
           c.background('white')
-          c.extent(resize_geometry)
+
+          if [@width, @height].all?
+            c.extent(resize_geometry)
+          end
         end
       end
 
