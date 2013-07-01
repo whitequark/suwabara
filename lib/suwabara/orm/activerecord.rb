@@ -44,8 +44,8 @@ module Suwabara::ORM
           write_attribute(name, JSON.dump(stored_file.to_hash))
         end
 
-        define_method(:"create_#{name}") do |name, content|
-          stored_file = Suwabara::StoredFile.new(self, name, StringIO.new(content), name)
+        define_method(:"create_#{name}") do |filename, content|
+          stored_file = Suwabara::StoredFile.new(self, name, StringIO.new(content), filename)
 
           write_attribute(name, JSON.dump(stored_file.to_hash))
         end
