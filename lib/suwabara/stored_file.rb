@@ -18,6 +18,8 @@ module Suwabara
         end
 
         initialize_from_io(file, File.basename(original_name))
+      elsif source.is_a?(StringIO)
+        initialize_from_io(source, File.basename(original_name))
       elsif source.respond_to?(:to_hash)
         hash = source.to_hash
 
