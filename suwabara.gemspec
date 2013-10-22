@@ -3,8 +3,8 @@ Gem::Specification.new do |spec|
   spec.version       = '0.0.1'
   spec.authors       = ['Peter Zotov']
   spec.email         = ['whitequark@whitequark.org']
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{Asset storage engine}
+  spec.summary       = %q{Asset storage engine}
   spec.homepage      = 'http://github.com/whitequark/suwabara'
   spec.license       = 'MIT'
 
