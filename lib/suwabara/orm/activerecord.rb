@@ -3,6 +3,10 @@ module Suwabara::ORM
   module ActiveRecord
     extend ActiveSupport::Concern
 
+    included do
+      after_create :update_storage_path
+    end
+
     module ClassMethods
       attr_reader :_mounted_storages
 
@@ -48,6 +52,10 @@ module Suwabara::ORM
           stored_file = Suwabara::StoredFile.new(self, name, StringIO.new(content), filename)
 
           write_attribute(name, JSON.dump(stored_file.to_hash))
+        end
+
+        define_method(:"update_storage_path") do
+          self.image = self.image.to_io if self.image
         end
 
         if options[:text]
