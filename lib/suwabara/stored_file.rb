@@ -9,6 +9,7 @@ module Suwabara
     def initialize(model, mounted_as, source, original_name=nil)
       @model      = model
       @mounted_as = mounted_as
+      @file       = nil
 
       if source.respond_to?(:to_io)
         file = source.to_io
@@ -36,7 +37,7 @@ module Suwabara
       @size    = file.size
       @storage = storage_for(file, @name).to_s
 
-      write(file)
+      @file = file
     end
 
     def initialize_from_hash(hash)
@@ -117,17 +118,16 @@ module Suwabara
     end
 
     def storage_for(io, name)
-      escaped_name = name.gsub(/[^.\w]/u, '_')
-
       File.join(partitions, name)
     end
 
-    def write(io)
+    def write
+      return unless @file
       full_path.parent.mkpath
 
       File.open(full_path, 'wb') do |file|
-        io.rewind
-        file.write io.read
+        @file.rewind
+        file.write @file.read
       end
     end
   end
