@@ -122,7 +122,7 @@ module Suwabara
     end
 
     def write
-      return unless @file || @model.id
+      return unless @file && self.storage
 
       full_path.parent.mkpath
 
