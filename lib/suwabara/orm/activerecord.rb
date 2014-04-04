@@ -5,25 +5,21 @@ module Suwabara::ORM
 
     attr_reader :_suwabara_files
 
-    def save
-      super
+    included do
+      after_commit :write_files
+    end
+
+    def write_files
       if self.errors.empty? && @_suwabara_files.present?
         @_suwabara_files.values.each { |f| f.send(:write) }
         @_suwabara_files = nil
       end
     end
 
-    def save!
-      super
-      if @_suwabara_files.present?
-        @_suwabara_files.values.each { |f| f.send(:write) }
-        @_suwabara_files = nil
-      end
-    end
+    private :write_files
 
     module ClassMethods
       attr_reader :_mounted_storages
-
 
       def mount_storage(name, klass, options={})
         name = name.to_sym
@@ -66,7 +62,7 @@ module Suwabara::ORM
         end
 
         define_method(:"create_#{name}") do |filename, content|
-          unless self.id
+          unless self.persisted?
             raise ActiveRecordError, "Method create_#{name} can be called only on persisted record"
           end
 
