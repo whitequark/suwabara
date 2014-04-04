@@ -3,6 +3,7 @@ require_relative 'test_helper'
 class StoredFileTest < Minitest::Test
   def setup
     @model = Object.new.tap { |o| def o.id; 42; end }
+    @model2 = Object.new.tap { |o| def o.id; 43; end }
 
     @tempfile = Tempfile.new('test')
     @tempfile.write('foobar')
@@ -29,7 +30,7 @@ class StoredFileTest < Minitest::Test
 
     assert_equal 'test.gif',     file_gif.name
     assert_equal 6,              file_gif.size
-    assert_equal @tempfile.path, file_gif.storage
+    assert_equal "000/000/0#{@model.id}/#{file_gif.name}", file_gif.storage
   end
 
   def test_content_type
@@ -73,8 +74,8 @@ class StoredFileTest < Minitest::Test
   end
 
   def test_equals
-    file2 = Suwabara::StoredFile.new(@warehouse, 'file', @file.to_hash)
+    file2 = Suwabara::StoredFile.new(@model, 'file', @file.to_hash)
 
-    assert_equal @file, file2
+    assert_equal @file.storage, file2.storage
   end
 end
