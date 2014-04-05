@@ -1,6 +1,6 @@
 module Suwabara
   class StoredFile
-    attr_reader :name, :size, :storage
+    attr_reader :name, :size
 
     def self.storage_root
       Suwabara.default_root
@@ -9,6 +9,7 @@ module Suwabara
     def initialize(model, mounted_as, source, original_name=nil)
       @model      = model
       @mounted_as = mounted_as
+      @file       = nil
 
       if source.respond_to?(:to_io)
         file = source.to_io
@@ -21,9 +22,7 @@ module Suwabara
       elsif source.is_a?(StringIO)
         initialize_from_io(source, File.basename(original_name))
       elsif source.respond_to?(:to_hash)
-        hash = source.to_hash
-
-        initialize_from_hash(hash)
+        initialize_from_hash(source.to_hash)
       else
         raise ArgumentError, "Suwabara::StoredFile can be initialized from IO or Hash"
       end
@@ -34,15 +33,12 @@ module Suwabara
     def initialize_from_io(file, original_name)
       @name    = original_name
       @size    = file.size
-      @storage = storage_for(file, @name).to_s
-
-      write(file)
+      @file    = file
     end
 
     def initialize_from_hash(hash)
       @name    = hash["name"]
       @size    = hash["size"]
-      @storage = hash["storage"]
     end
 
     private :initialize_from_io, :initialize_from_hash
@@ -56,11 +52,11 @@ module Suwabara
     end
 
     def full_path
-      self.class.storage_root.join(@storage)
+      self.class.storage_root.join(self.storage)
     end
 
     def url
-      url_for(@storage)
+      url_for(self.storage)
     end
 
     def rename(new_name)
@@ -88,7 +84,7 @@ module Suwabara
       {
         "name"    => @name,
         "size"    => @size,
-        "storage" => @storage,
+        "storage" => self.storage
       }
     end
 
@@ -99,7 +95,11 @@ module Suwabara
     def ==(other)
       other.instance_of?(self.class) &&
         @name    == other.name &&
-        @storage == other.storage
+        self.storage == other.storage
+    end
+
+    def storage
+      storage_for(@name)
     end
 
     private
@@ -116,18 +116,19 @@ module Suwabara
         join('/')
     end
 
-    def storage_for(io, name)
-      escaped_name = name.gsub(/[^.\w]/u, '_')
-
+    def storage_for(name)
+      return unless @model.id
       File.join(partitions, name)
     end
 
-    def write(io)
+    def write
+      return unless @file && self.storage
+
       full_path.parent.mkpath
 
       File.open(full_path, 'wb') do |file|
-        io.rewind
-        file.write io.read
+        @file.rewind
+        file.write @file.read
       end
     end
   end

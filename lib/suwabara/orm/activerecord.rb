@@ -3,6 +3,21 @@ module Suwabara::ORM
   module ActiveRecord
     extend ActiveSupport::Concern
 
+    attr_reader :_suwabara_files
+
+    included do
+      after_commit :write_files
+    end
+
+    def write_files
+      if self.errors.empty? && @_suwabara_files.present?
+        @_suwabara_files.values.each { |f| f.send(:write) }
+        @_suwabara_files = nil
+      end
+    end
+
+    private :write_files
+
     module ClassMethods
       attr_reader :_mounted_storages
 
@@ -41,12 +56,19 @@ module Suwabara::ORM
                     "Hash"
           end
 
+          @_suwabara_files ||= {}
+          @_suwabara_files[name] = stored_file
           write_attribute(name, JSON.dump(stored_file.to_hash))
         end
 
         define_method(:"create_#{name}") do |filename, content|
+          unless self.persisted?
+            raise ActiveRecordError, "Method create_#{name} can be called only on persisted record"
+          end
+
           stored_file = Suwabara::StoredFile.new(self, name, StringIO.new(content), filename)
 
+          stored_file.send(:write)
           write_attribute(name, JSON.dump(stored_file.to_hash))
         end
 

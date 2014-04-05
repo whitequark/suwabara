@@ -1,4 +1,6 @@
 require 'tempfile'
+require 'active_record'
+require 'nulldb'
 
 require 'simplecov'
 
