@@ -6,8 +6,10 @@ module Suwabara
     def initialize_from_io(io, original_name)
       super
 
-      movie = FFMPEG::Movie.new(full_path.to_s)
-      @duration = movie.duration
+      if io.respond_to?(:path)
+        movie = FFMPEG::Movie.new(io.path)
+        @duration = movie.duration
+      end
     end
 
     def initialize_from_hash(hash)
