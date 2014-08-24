@@ -59,7 +59,7 @@ module Suwabara
         end
       end
 
-      image.write(destination)
+      image.write(destination.to_s)
     end
 
     def to_s
