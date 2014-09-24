@@ -6,7 +6,7 @@ module Suwabara::ORM
     attr_reader :_suwabara_files
 
     included do
-      after_commit :write_files
+      after_commit :write_files, on: [:create, :update]
     end
 
     def write_files
