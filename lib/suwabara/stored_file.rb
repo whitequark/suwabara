@@ -1,3 +1,5 @@
+require 'mimemagic'
+
 module Suwabara
   class StoredFile
     attr_reader :name, :size
@@ -44,7 +46,11 @@ module Suwabara
     private :initialize_from_io, :initialize_from_hash
 
     def content_type
-      MIME::Types.of(File.extname(@name)).first.content_type
+      if File.extname(@name)
+        MIME::Types.of(File.extname(@name)).first.content_type
+      else
+        MimeMagic.by_magic(File.open(self.full_path)).to_s
+      end
     end
 
     def read

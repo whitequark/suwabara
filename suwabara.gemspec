@@ -16,6 +16,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 1.9'
 
   spec.add_dependency 'mime-types',      '~> 1.20'
+  spec.add_dependency 'mimemagic',       '~> 0.2.1'
   spec.add_dependency 'mini_magick',     '~> 3.5'
   spec.add_dependency 'streamio-ffmpeg', '~> 0.9.0'
 
